@@ -14,7 +14,7 @@ export const Index = (params: string | undefined) => {
     return `<!doctype html>
   <html lang="en">
     <head>
-      <title>React RUST SSR</title>
+      <meta charset="UTF-8" />
       <link rel="stylesheet" href="/styles/ssr.css">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
@@ -28,7 +28,7 @@ export const Index = (params: string | undefined) => {
             }}
         />
     )}
-    <body>
+    <body class="bg-slate-100">
       <div id="root">${app}</div>
     </body>
       

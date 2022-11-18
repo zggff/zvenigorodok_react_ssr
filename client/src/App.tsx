@@ -1,19 +1,25 @@
-import { Link, Route, Routes } from 'react-router-dom'
 import React from 'react'
+import { Helmet } from 'react-helmet'
+
+import Navbar from './components/Navbar'
+import Favicon from './assets/favicon.png'
+import Router from './router'
 
 const App: React.FC = () => {
     return (
-        <div className='App'>
-            <nav>
-                <Link to='/'>home</Link>
-                <Link to='/about'>about</Link>
-            </nav>
-            <h1 className='text-primary text-4xl font-bold'>hello</h1>
-            <Routes>
-                <Route path='/' element={<div>Home</div>} />
-                <Route path='/about' element={<div>About</div>} />
-            </Routes>
-        </div>
+        <>
+            <Helmet>
+                <title>звенигородок</title>
+                <link rel='icon' href={Favicon} />
+            </Helmet>
+            <main>
+                <Navbar />
+
+                <div className='py-4 px-4'>
+                    <Router />
+                </div>
+            </main>
+        </>
     )
 }
 

@@ -10,8 +10,15 @@
         "build:ssr": "webpack --config ./webpack/webpack.ssr.js --progress"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^6.2.1",
+        "@fortawesome/free-solid-svg-icons": "^6.2.1",
+        "@fortawesome/react-fontawesome": "^0.2.0",
+        "@headlessui/react": "^1.7.4",
+        "@heroicons/react": "^2.0.13",
+        "@pbe/react-yandex-maps": "^1.2.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-helmet": "^6.1.0",
         "react-router-dom": "^6.4.3",
         "style-loader": "^3.3.1"
     },
@@ -19,9 +26,11 @@
         "@types/node": "^18.8.0",
         "@types/react": "^18.0.17",
         "@types/react-dom": "^18.0.6",
+        "@types/react-helmet": "^6.1.5",
         "@vitejs/plugin-react": "^2.1.0",
         "autoprefixer": "^10.4.13",
         "clean-webpack-plugin": "^4.0.0",
+        "copy-webpack-plugin": "^11.0.0",
         "css-loader": "^6.7.2",
         "file-loader": "^6.2.0",
         "mini-css-extract-plugin": "^2.6.1",

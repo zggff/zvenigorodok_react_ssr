@@ -1,34 +1,28 @@
+use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{
-    get, http::StatusCode, middleware::Logger, web::scope, App, HttpRequest, HttpResponse,
+    get, http::StatusCode, middleware::Logger, web, web::scope, App, HttpRequest, HttpResponse,
     HttpServer, Responder,
 };
 use clap::Parser;
+use mongodb::Client;
 use once_cell::sync::OnceCell;
-use ssr::Ssr;
 
+mod api;
 mod cache;
 mod ssr;
 mod tls;
 
-static SSR: OnceCell<Ssr> = OnceCell::new();
+static SSR: OnceCell<ssr::Ssr> = OnceCell::new();
 
 #[derive(Debug, Parser)]
 struct Args {
     /// port for the application
     #[arg(short, long, default_value_t = 8080)]
     port: u16,
-
     /// frontend dist directory
     #[arg(short, long, default_value_t = String::from("./client/dist"))]
     dir: String,
-
-    /// ssl private key
-    #[arg(long)]
-    key: Option<String>,
-    /// ssl public certificate
-    #[arg(long)]
-    cert: Option<String>,
 }
 
 #[actix_web::main]
@@ -46,14 +40,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .expect("no js file found");
         let entrypoint = "SSR";
         let result = format!("{};{};{}", polyfill, code, entrypoint);
-        Ssr::initialize();
-        SSR.set(Ssr::new(result))
+        ssr::Ssr::initialize();
+        SSR.set(ssr::Ssr::new(result))
             .expect("failed to set global variable");
     }
 
+    let uri = std::env::var("MONGODB_URI").unwrap_or("mongodb://localhost:27017".into());
+    let client = Client::with_uri_str(uri).await?;
+    let coll_name = std::env::var("COLL_NAME").unwrap_or("reviews".into());
+    let db_name = std::env::var("DB_NAME").unwrap_or("zvenigorodok".into());
+    let collection: mongodb::Collection<api::Review> =
+        client.database(&db_name).collection(&coll_name);
+
     let mut server = HttpServer::new(move || {
+        let cors = if cfg!(debug_assertions) {
+            Cors::permissive()
+        } else {
+            Cors::default().allowed_methods(vec!["GET", "POST"])
+        };
+
         App::new()
+            .app_data(web::Data::new(collection.clone()))
             .wrap(Logger::default())
+            .wrap(cors)
             .service(scope("/styles").wrap(cache::CacheInterceptor).service(
                 fs::Files::new("", client_path.as_path().join("ssr/styles/")).show_files_listing(),
             ))
@@ -63,11 +72,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .service(scope("/scripts").wrap(cache::CacheInterceptor).service(
                 fs::Files::new("", client_path.as_path().join("client/")).show_files_listing(),
             ))
+            .service(api::api("/api"))
             .service(index)
     })
     .bind(("0.0.0.0", args.port))?;
 
-    if let (Some(key), Some(cert)) = (args.key, args.cert) {
+    let ssl_key = std::env::var("SSL_KEY");
+    let ssl_cert = std::env::var("SSL_CERT");
+
+    if let (Ok(key), Ok(cert)) = (ssl_key, ssl_cert) {
         let config = tls::load_rustls_config(&key, &cert);
         server = server.bind_rustls("0.0.0.0:443", config)?;
     }
@@ -93,5 +106,3 @@ async fn index(req: HttpRequest) -> impl Responder {
         .content_type("text/html; charset=utf-8")
         .body(html)
 }
-
-// INFO: look into ts-rs https://github.com/Aleph-Alpha/ts-rs for common types between rust and typescript
