@@ -49,7 +49,7 @@ where
 
                 let mut res = fut.await?;
                 let headers = res.headers_mut();
-                headers.append(CACHE_CONTROL, HeaderValue::from_static("max-age=31536000"));
+                headers.append(CACHE_CONTROL, HeaderValue::from_static("max-age=604800"));
                 Ok(res)
             }
             #[cfg(debug_assertions)]
