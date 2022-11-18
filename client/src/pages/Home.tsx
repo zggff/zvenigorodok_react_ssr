@@ -3,6 +3,7 @@ import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps'
 
 import Certificate from '../assets/images/certificate_small.webp'
 import Reviews from '../components/Reviews'
+import { Helmet } from 'react-helmet'
 
 const Home: React.FC = () => {
     const center = [55.746309, 36.878061]
@@ -13,6 +14,13 @@ const Home: React.FC = () => {
     }
     return (
         <>
+            <Helmet>
+                <meta
+                    name='keywords'
+                    content='Звенигород, шиномонтаж, запись, zvenigorodok, звенигородок'
+                />
+                <meta name='description' content='шиномонтаж в Звенигороде' />
+            </Helmet>
             <h1 className='text-center text-red-500 text-4xl'>шиномонтаж</h1>
 
             <h2 className='text-2xl'>

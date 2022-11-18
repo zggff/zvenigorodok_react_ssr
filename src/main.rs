@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{
@@ -12,6 +14,7 @@ mod api;
 mod cache;
 mod ssr;
 static SSR: OnceCell<ssr::Ssr> = OnceCell::new();
+static DIST: OnceCell<PathBuf> = OnceCell::new();
 
 #[derive(Debug, Parser)]
 struct Args {
@@ -29,7 +32,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
     let args = Args::parse();
-    let client_path = std::path::PathBuf::from(args.dir);
+    let client_path = PathBuf::from(args.dir);
+    DIST.set(client_path.clone()).unwrap();
 
     {
         // initialize Server side rendering
@@ -70,6 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .service(scope("/scripts").wrap(cache::CacheInterceptor).service(
                 fs::Files::new("", client_path.as_path().join("client/")).show_files_listing(),
             ))
+            .service(sitemap)
             .service(api::api("/api"))
             .service(index)
     })
@@ -77,6 +82,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     .run()
     .await?;
     Ok(())
+}
+
+#[get("/sitemap")]
+async fn sitemap() -> actix_web::Result<actix_files::NamedFile> {
+    Ok(actix_files::NamedFile::open(
+        DIST.get().unwrap().as_path().join("client/sitemap.xml"),
+    )?)
 }
 
 #[get("{url}*")]

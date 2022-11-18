@@ -55,13 +55,13 @@ export default {
         extensions: ['.tsx', '.ts', '.js', '.jsx'],
     },
     plugins: [
-        // new CopyPlugin({
-        //     patterns: [
-        //         {
-        //             from: './public/favicon.png',
-        //         },
-        //     ],
-        // }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: './public/sitemap.xml',
+                },
+            ],
+        }),
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
         }),
