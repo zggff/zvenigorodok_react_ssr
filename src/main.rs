@@ -86,7 +86,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ssl_cert = std::env::var("SSL_CERT");
 
     if let (Ok(key), Ok(cert)) = (ssl_key, ssl_cert) {
-        let config = tls::load_rustls_config(&key, &cert);
+        let config = tls::load_rustls_config(&cert, &key);
         server = server.bind_rustls("0.0.0.0:443", config)?;
     }
 
