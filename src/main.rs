@@ -4,7 +4,6 @@ use actix_web::{
     get, http::StatusCode, middleware::Logger, web, web::scope, App, HttpRequest, HttpResponse,
     HttpServer, Responder,
 };
-use actix_web_middleware_redirect_https::RedirectHTTPS;
 use clap::Parser;
 use mongodb::Client;
 use once_cell::sync::OnceCell;
@@ -60,7 +59,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Cors::default().allowed_methods(vec!["GET", "POST"])
         };
 
-        let app = App::new()
+        App::new()
             .app_data(web::Data::new(collection.clone()))
             .wrap(Logger::default())
             .wrap(cors)
@@ -74,21 +73,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 fs::Files::new("", client_path.as_path().join("client/")).show_files_listing(),
             ))
             .service(api::api("/api"))
-            .service(index);
-        #[cfg(not(debug_assertions))]
-        let app = app.wrap(RedirectHTTPS::default());
-
-        app
+            .service(index)
     })
     .bind(("0.0.0.0", args.port))?;
 
-    let ssl_key = std::env::var("SSL_KEY");
-    let ssl_cert = std::env::var("SSL_CERT");
-
-    if let (Ok(key), Ok(cert)) = (ssl_key, ssl_cert) {
-        let config = tls::load_rustls_config(&cert, &key);
-        server = server.bind_rustls("0.0.0.0:443", config)?;
-    }
+    // let ssl_key = std::env::var("SSL_KEY");
+    // let ssl_cert = std::env::var("SSL_CERT");
+    //
+    // if let (Ok(key), Ok(cert)) = (ssl_key, ssl_cert) {
+    //     let config = tls::load_rustls_config(&cert, &key);
+    //     server = server.bind_rustls("0.0.0.0:443", config)?;
+    // }
 
     server.run().await?;
 

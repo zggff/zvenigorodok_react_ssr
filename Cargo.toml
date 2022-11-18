@@ -28,4 +28,3 @@ ts-rs = "6.2.1"
 bson = { version = "2.4.0", features = ["chrono"] }
 chrono = { version = "0.4.23", features = ["serde"] }
 actix-cors = "0.6.4"
-actix-web-middleware-redirect-https = "3.0.1"
