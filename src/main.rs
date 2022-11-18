@@ -11,8 +11,6 @@ use once_cell::sync::OnceCell;
 mod api;
 mod cache;
 mod ssr;
-mod tls;
-
 static SSR: OnceCell<ssr::Ssr> = OnceCell::new();
 
 #[derive(Debug, Parser)]
@@ -52,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let collection: mongodb::Collection<api::Review> =
         client.database(&db_name).collection(&coll_name);
 
-    let mut server = HttpServer::new(move || {
+    HttpServer::new(move || {
         let cors = if cfg!(debug_assertions) {
             Cors::permissive()
         } else {
@@ -75,18 +73,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .service(api::api("/api"))
             .service(index)
     })
-    .bind(("0.0.0.0", args.port))?;
-
-    // let ssl_key = std::env::var("SSL_KEY");
-    // let ssl_cert = std::env::var("SSL_CERT");
-    //
-    // if let (Ok(key), Ok(cert)) = (ssl_key, ssl_cert) {
-    //     let config = tls::load_rustls_config(&cert, &key);
-    //     server = server.bind_rustls("0.0.0.0:443", config)?;
-    // }
-
-    server.run().await?;
-
+    .bind(("0.0.0.0", args.port))?
+    .run()
+    .await?;
     Ok(())
 }
 
