@@ -44,7 +44,7 @@ export default function Navbar() {
                             to='/'
                         >
                             <img
-                                className='h-10'
+                                className='h-10 w-fit'
                                 src={Logo}
                                 alt='ЗвенигородОк'
                             />
@@ -52,6 +52,7 @@ export default function Navbar() {
                         <button
                             className='text-black cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block lg:hidden outline-none focus:outline-none'
                             type='button'
+                            aria-label='expand navbar'
                             onClick={() => setNavbarOpen(!navbarOpen)}
                         >
                             <FontAwesomeIcon icon={faBars} />

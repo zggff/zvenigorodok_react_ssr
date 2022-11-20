@@ -44,7 +44,7 @@ const Home: React.FC = () => {
                     </Map>
                 </YMaps>
                 <img
-                    className='w-full  md:h-100 md:w-auto'
+                    className='w-full h-fit md:h-100 md:w-auto'
                     src={Certificate}
                     alt='Сертификат'
                 />
