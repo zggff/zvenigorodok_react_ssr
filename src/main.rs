@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{
-    get, http::StatusCode, middleware::Logger, web, web::scope, App, HttpRequest, HttpResponse,
-    HttpServer, Responder,
+    get, http::StatusCode, middleware, web, web::scope, App, HttpRequest, HttpResponse, HttpServer,
+    Responder,
 };
 use clap::Parser;
 use mongodb::Client;
@@ -63,7 +63,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         App::new()
             .app_data(web::Data::new(collection.clone()))
-            .wrap(Logger::default())
+            .wrap(middleware::Logger::default())
+            .wrap(middleware::Compress::default())
             .wrap(cors)
             .service(scope("/styles").wrap(cache::CacheInterceptor).service(
                 fs::Files::new("", client_path.as_path().join("ssr/styles/")).show_files_listing(),
