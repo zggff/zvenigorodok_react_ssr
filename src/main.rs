@@ -66,15 +66,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
             .wrap(cors)
-            .service(scope("/styles").wrap(cache::CacheInterceptor).service(
-                fs::Files::new("", client_path.as_path().join("ssr/styles/")).show_files_listing(),
-            ))
-            .service(scope("/images").wrap(cache::CacheInterceptor).service(
-                fs::Files::new("", client_path.as_path().join("ssr/images/")).show_files_listing(),
-            ))
-            .service(scope("/scripts").wrap(cache::CacheInterceptor).service(
-                fs::Files::new("", client_path.as_path().join("client/")).show_files_listing(),
-            ))
+            .service(
+                scope("/styles")
+                    .wrap(cache::CacheInterceptor::new(7))
+                    .service(
+                        fs::Files::new("", client_path.as_path().join("ssr/styles/"))
+                            .show_files_listing(),
+                    ),
+            )
+            .service(
+                scope("/images")
+                    .wrap(cache::CacheInterceptor::new(31))
+                    .service(
+                        fs::Files::new("", client_path.as_path().join("ssr/images/"))
+                            .show_files_listing(),
+                    ),
+            )
+            .service(
+                scope("/scripts")
+                    .wrap(cache::CacheInterceptor::new(7))
+                    .service(
+                        fs::Files::new("", client_path.as_path().join("client/"))
+                            .show_files_listing(),
+                    ),
+            )
             .service(sitemap)
             .service(api::api("/api"))
             .service(index)
