@@ -13,15 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        - name: Cache
-          uses: actions/cache@v2
-          with:
-            path: |
-              ~/.cargo/registry
-              ~/.cargo/git
-              ~/.rustup
-              target
-            key: ${{ runner.os }}-deps
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.rustup
+            target
+          key: ${{ runner.os }}-deps
       - name: Build frontend
         run: |
           cd client 
@@ -60,7 +60,7 @@ jobs:
           tar czf $ASSET_PATH *
 
           cd $src
-        
+
           case $RUNNER_OS in
               Linux)
                   sha256sum $ASSET_NAME > $CHECKSUM_PATH
@@ -76,6 +76,6 @@ jobs:
         with:
           files: |
             ${{ env.ASSET_PATH }}
-            ${{ env.CHECKSUM_PATH }} 
+            ${{ env.CHECKSUM_PATH }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
