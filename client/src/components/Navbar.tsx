@@ -44,7 +44,7 @@ export default function Navbar() {
                             to='/'
                         >
                             <img
-                                className='h-10 w-fit'
+                                className='h-10 w-auto'
                                 src={Logo}
                                 alt='ЗвенигородОк'
                             />
@@ -65,11 +65,16 @@ export default function Navbar() {
                         }
                         id='example-navbar-danger'
                     >
-                        <ul className='flex pb-2 flex-col gap-1 lg:flex-row list-none lg:ml-auto text-xs uppercase font-bold leading-snug text-black hover:text-red w-full text-center'>
+                        <ul className='flex pb-2 flex-col gap-2 lg:flex-row list-none lg:gap-4 lg:ml-auto text-xs uppercase font-bold leading-snug text-black hover:text-red w-full text-center'>
                             <NavLink
                                 to='/'
                                 setOpen={setNavbarOpen}
                                 text='шиномонтаж'
+                            />
+                            <NavLink
+                                to='/cleaning'
+                                setOpen={setNavbarOpen}
+                                text='шимчистка'
                             />
                         </ul>
                     </div>

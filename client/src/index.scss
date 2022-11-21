@@ -3,3 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 @tailwind variants;
+
+@layer base {
+    h1 {
+        @apply text-center text-red-500 text-4xl my-4;
+    }
+    h2 {
+        @apply text-2xl my-4;
+    }
+}
