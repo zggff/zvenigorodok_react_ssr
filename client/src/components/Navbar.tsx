@@ -74,7 +74,7 @@ export default function Navbar() {
                             <NavLink
                                 to='/cleaning'
                                 setOpen={setNavbarOpen}
-                                text='шимчистка'
+                                text='химчистка'
                             />
                         </ul>
                     </div>
