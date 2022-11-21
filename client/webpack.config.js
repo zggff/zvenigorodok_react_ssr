@@ -4,6 +4,7 @@ import path from 'path'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import { fileURLToPath } from 'url'
+import CopyPlugin from 'copy-webpack-plugin'
 import webpack from 'webpack'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -64,6 +65,13 @@ export default [
         plugins: [
             new MiniCssExtractPlugin({
                 filename: './styles/[contenthash]-ssr.css',
+            }),
+            new CopyPlugin({
+                patterns: [
+                    {
+                        from: './public/sitemap.xml',
+                    },
+                ],
             }),
         ],
     },

@@ -137,7 +137,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[get("/sitemap")]
 async fn sitemap() -> actix_web::Result<actix_files::NamedFile> {
     Ok(actix_files::NamedFile::open(
-        DIST.get().unwrap().as_path().join("client/sitemap.xml"),
+        DIST.get().unwrap().as_path().join("sitemap.xml"),
     )?)
 }
 
