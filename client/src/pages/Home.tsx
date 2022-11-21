@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { lazy, Suspense } from 'react'
 import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps'
 
 import Certificate from '../assets/images/certificate_small.webp'
-import Reviews from '../components/Reviews'
 import { Helmet } from 'react-helmet'
+
+const Reviews = lazy(() => {
+    return import('../components/Reviews')
+})
 
 const Home: React.FC = () => {
     const center = [55.746309, 36.878061]
@@ -51,7 +54,9 @@ const Home: React.FC = () => {
             </div>
             <p>Оборудование: Hofmann</p>
             <p>Расходные материалы: Clipper, Rema Tip-Top</p>
-            <Reviews target='Tyres' />
+            <Suspense>
+                <Reviews target='Tyres' />
+            </Suspense>
         </>
     )
 }

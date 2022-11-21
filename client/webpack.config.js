@@ -17,6 +17,10 @@ export default [
         mode: 'production',
         target: 'web',
         entry: path.resolve(__dirname, './src/ssr.tsx'),
+        performance: {
+            maxAssetSize: 400000,
+            maxEntrypointSize: 400000,
+        },
 
         output: {
             publicPath: '',
@@ -24,7 +28,7 @@ export default [
             path: path.resolve(__dirname, buildDirectory),
             library: 'SSR',
             libraryTarget: 'var',
-            filename: 'index.js',
+            filename: 'ssr/index.js',
         },
         resolve: {
             extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
@@ -32,8 +36,11 @@ export default [
         module: {
             rules: [
                 {
+                    parser: {
+                        import: false,
+                    },
                     test: /\.ts(x?)$/,
-                    exclude: path.resolve(__dirname, 'node_modules'),
+                    exclude: /'node_modules'/,
                     use: [
                         {
                             loader: 'ts-loader',
@@ -82,15 +89,21 @@ export default [
         output: {
             path: path.resolve(__dirname, buildDirectory),
             filename: 'scripts/[contenthash]-bundle.js',
+            chunkFilename: 'scripts/[name].chunk.js',
         },
+
         resolve: {
             extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+        },
+        performance: {
+            maxAssetSize: 400000,
+            maxEntrypointSize: 400000,
         },
         module: {
             rules: [
                 {
                     test: /\.ts(x?)$/,
-                    exclude: path.resolve(__dirname, 'node_modules'),
+                    exclude: /'node_modules'/,
                     use: [
                         {
                             loader: 'ts-loader',

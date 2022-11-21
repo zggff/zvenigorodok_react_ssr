@@ -1,6 +1,9 @@
-import React from 'react'
-import Reviews from '../components/Reviews'
+import React, { lazy, Suspense } from 'react'
 import { Helmet } from 'react-helmet'
+
+const Reviews = lazy(() => {
+    return import('../components/Reviews')
+})
 
 const Cleaning: React.FC = () => {
     return (
@@ -48,8 +51,9 @@ const Cleaning: React.FC = () => {
                 следов грязи, пятен и разводов. Мы уверенно гарантируем
                 абсолютную чистоту ковров и мягкой мебели!
             </p>
-
-            <Reviews target='Cleaning' />
+            <Suspense>
+                <Reviews target='Cleaning' />
+            </Suspense>
         </>
     )
 }
