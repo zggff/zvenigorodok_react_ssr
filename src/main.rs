@@ -38,10 +38,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         // initialize Server side rendering
         let polyfill = r##"function TextEncoder(){}function TextDecoder(){}TextEncoder.prototype.encode=function(e){for(var o=[],t=e.length,r=0;r<t;){var n=e.codePointAt(r),c=0,f=0;for(n<=127?(c=0,f=0):n<=2047?(c=6,f=192):n<=65535?(c=12,f=224):n<=2097151&&(c=18,f=240),o.push(f|n>>c),c-=6;c>=0;)o.push(128|n>>c&63),c-=6;r+=n>=65536?2:1}return o},TextDecoder.prototype.decode=function(e){for(var o="",t=0;t<e.length;){var r=e[t],n=0,c=0;if(r<=127?(n=0,c=255&r):r<=223?(n=1,c=31&r):r<=239?(n=2,c=15&r):r<=244&&(n=3,c=7&r),e.length-t-n>0)for(var f=0;f<n;)c=c<<6|63&(r=e[t+f+1]),f+=1;else c=65533,n=e.length-t;o+=String.fromCodePoint(c),t+=n+1}return o};"##;
-        let code = std::fs::read_to_string(client_path.as_path().join("ssr/index.js"))
+        let code = std::fs::read_to_string(client_path.as_path().join("index.js"))
             .expect("no js file found");
         let entrypoint = "SSR";
         let result = format!("{};{};{}", polyfill, code, entrypoint);
+
+        let script = std::fs::read_dir(client_path.as_path().join("scripts"))
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter_map(|f| {
+                f.path().to_str().and_then(|d| {
+                    if d.ends_with("bundle.js") {
+                        Some(f.file_name().to_string_lossy().to_string())
+                    } else {
+                        None
+                    }
+                })
+            })
+            .next()
+            .expect("no js file");
+        let style = std::fs::read_dir(client_path.as_path().join("styles"))
+            .unwrap()
+            .filter_map(Result::ok)
+            .filter_map(|f| {
+                f.path().to_str().and_then(|d| {
+                    if d.ends_with("ssr.css") {
+                        Some(f.file_name().to_string_lossy().to_string())
+                    } else {
+                        None
+                    }
+                })
+            })
+            .next()
+            .expect("no css file");
+
+        let result = result
+            .replace("ssr.css", &style)
+            .replace("bundle.js", &script);
+
         ssr::Ssr::initialize();
         SSR.set(ssr::Ssr::new(result))
             .expect("failed to set global variable");
@@ -70,7 +104,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 scope("/styles")
                     .wrap(cache::CacheInterceptor::new(7))
                     .service(
-                        fs::Files::new("", client_path.as_path().join("ssr/styles/"))
+                        fs::Files::new("", client_path.as_path().join("styles/"))
                             .show_files_listing(),
                     ),
             )
@@ -78,7 +112,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 scope("/images")
                     .wrap(cache::CacheInterceptor::new(31))
                     .service(
-                        fs::Files::new("", client_path.as_path().join("ssr/images/"))
+                        fs::Files::new("", client_path.as_path().join("images/"))
                             .show_files_listing(),
                     ),
             )
@@ -86,7 +120,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 scope("/scripts")
                     .wrap(cache::CacheInterceptor::new(7))
                     .service(
-                        fs::Files::new("", client_path.as_path().join("client/"))
+                        fs::Files::new("", client_path.as_path().join("scripts/"))
                             .show_files_listing(),
                     ),
             )
